@@ -130,13 +130,33 @@ GROUP BY department
 
 
 
+--Write a query to count the number of employees in each department.
+
+SELECT department,COUNT(emp_Id) as Total_Employees 
+FROM employees
+GROUP BY department;
+
+-- Write a query to find the total salary expenses for each department.
+
+SELECT department,SUM(salary) as Total
+FROM employees
+GROUP BY department;
+
+-- Write a query to find the highest salary in each department.
+
+SELECT department, MAX(salary) as MaximalSalary
+FROM employees
+GROUP BY department;
+
+--Write a query to count the number of employees hired in each year.
+--Use hire_date to extract the year.
 
 
+SELECT COUNT(emp_id), EXTRACT(YEAR from hire_date) as hireYear
+FROM employees
+GROUP BY hireYear;
 
-
-
-
-
+--
 
 
 
