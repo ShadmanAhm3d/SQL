@@ -194,6 +194,119 @@ WHERE C.Country = 'USA'
 
 
 
+--(Date : 29 october)
+-- Create tables for the dataset
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100),
+    phone VARCHAR(15),
+    city VARCHAR(50)
+);
+
+CREATE TABLE products (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(100),
+    category VARCHAR(50),
+    price DECIMAL(10, 2)
+);
+
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY,
+    order_date DATE,
+    customer_id INT REFERENCES customers(customer_id)
+);
+
+CREATE TABLE order_items (
+    order_item_id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES orders(order_id),
+    product_id INT REFERENCES products(product_id),
+    quantity INT,
+    total_price DECIMAL(10, 2)
+);
+
+-- Insert sample data into each table
+INSERT INTO customers (first_name, last_name, email, phone, city) VALUES
+('Alice', 'Johnson', 'alice@example.com', '555-1234', 'New York'),
+('Bob', 'Smith', 'bob@example.com', '555-5678', 'Los Angeles'),
+('Charlie', 'Brown', 'charlie@example.com', '555-8765', 'Chicago');
+
+INSERT INTO products (product_name, category, price) VALUES
+('Laptop', 'Electronics', 999.99),
+('Headphones', 'Electronics', 199.99),
+('Coffee Maker', 'Appliances', 49.99),
+('Desk Chair', 'Furniture', 89.99);
+
+INSERT INTO orders (order_date, customer_id) VALUES
+('2024-01-10', 1),
+('2024-01-12', 2),
+('2024-01-15', 1);
+
+INSERT INTO order_items (order_id, product_id, quantity, total_price) VALUES
+(1, 1, 1, 999.99),
+(1, 2, 1, 199.99),
+(2, 3, 1, 49.99),
+(3, 1, 2, 1999.98),
+(3, 4, 1, 89.99);
+
+--Write a query to retrieve each customer's first and last name along 
+--with the date of each order they placed.
+
+SELECT c.first_name,c.last_name,o.order_date
+FROM customers c
+INNER JOIN orders o
+ ON c.customer_id = o.customer_id
+
+
+--For each order, list the customer's name, 
+--order date, product name, quantity ordered, and the total price for that item.
+
+SELECT c.first_name, o.order_date,p.product_name,oi.quantity
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN order_items oi ON o.order_id = oi.order_id
+JOIN products p ON p.product_id = oi.product_id
+
+--Calculate the total amount each customer has spent across all their orders.
+
+SELECT c.first_name , SUM(oi.total_price)
+FROM customers c
+INNER JOIN orders o ON o.customer_id = c.customer_id
+JOIN order_items oi ON oi.order_id = o.order_id
+GROUP BY c.first_name
+
+
+--Find orders where the total value of all items is greater than $500. 
+--Include the customer’s name, order ID, order date, and the total order amount.
+
+SELECT c.first_name,o.order_id,o.order_date, SUM(oi.total_price)
+FROM customers c
+INNER JOIN orders o ON o.customer_id = c.customer_id
+INNER JOIN order_items oi ON o.order_id = oi.order_id
+GROUP BY c.first_name,o.order_id,o.order_date
+HAVING SUM(oi.total_price) > 500;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
